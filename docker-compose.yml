@@ -1,0 +1,11 @@
+services:
+  plenary:
+    build:
+      context: .
+      dockerfile: lagoon/go.Dockerfile
+    labels:
+      lagoon.type: basic
+      lagoon.service.usecomposeports: true
+    ports:
+      - "9999:9999"
+
