@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"encoding/json"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -25,6 +26,22 @@ func (app *app) home(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, r, err)
 		return
 	}
+
+}
+
+func (app *app) recipeList(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context() 
+	recipes, err := app.queries.ListRecipesByUser(ctx, 1)
+	if err != nil {
+		app.serverError(w, r, err)
+        return
+    }
+	
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(recipes); err != nil {
+		app.serverError(w, r, err)
+        return
+    }
 
 }
 

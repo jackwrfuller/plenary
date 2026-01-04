@@ -7,5 +7,17 @@ services:
       lagoon.type: basic
       lagoon.service.usecomposeports: true
     ports:
-      - "9999:9999"
+      - "${APP_PORT:-9999}:${APP_PORT:-9999}"
+    env_file:
+      - .env
+  db:
+    image: uselagoon/mysql-8.0:latest
+    restart: always
+    labels:
+      lagoon.type: mariadb
+      lagoon.image: uselagoon/mysql-8.0:latest
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./schema/schema.sql:/docker-entrypoint-initdb.d/schema.sql
 

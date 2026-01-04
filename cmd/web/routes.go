@@ -15,6 +15,7 @@ func (app *app) routes() *http.ServeMux {
 	mux.HandleFunc("GET /recipe/view/{id}", app.recipeView)
 	mux.HandleFunc("GET /recipe/create", app.recipeCreate)
 	mux.HandleFunc("POST /recipe/create", app.recipeCreatePost)
+	mux.HandleFunc("GET /recipe/list", app.recipeList)
 
 	return mux
 }
