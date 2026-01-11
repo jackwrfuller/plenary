@@ -41,6 +41,7 @@ func main() {
 	if err != nil {
 		logger.Error(err.Error())
 	}
+	logger.Info("using config values", "cfg", cfg)
 
 	db, err := openDB(cfg.mysqlDSN())
 	if err != nil {

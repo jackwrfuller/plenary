@@ -1,0 +1,51 @@
+{{define "title"}}Recipe #{{.Recipe.ID}} — {{.Recipe.Name}}{{end}}
+
+{{define "main"}}
+    {{with .Recipe}}
+    <div class="recipe">
+    
+        <div class="recipe-header">
+            <h1 class="recipe-name">{{.Name}}</h1>
+            <div class="recipe-meta">
+                <span class="recipe-id">Recipe #{{.ID}}</span>
+                <span class="recipe-serves">Serves {{.Serves}}</span>
+    
+                {{if .CanMealPrep}}
+                    <span class="recipe-badge">Meal Prep Friendly</span>
+                {{end}}
+            </div>
+        </div>
+    
+        {{if .Notes.Valid}}
+        <section class="recipe-notes">
+            <h2>Notes</h2>
+            <p>{{.Notes.String}}</p>
+        </section>
+        {{end}}
+    
+        <div class="metadata">
+            <dl>
+                <dt>Created</dt>
+                <dd>
+                    {{if .CreatedAt.Valid}}
+                        {{.CreatedAt.Time.Format "02 Jan 2006 15:04"}}
+                    {{else}}
+                        —
+                    {{end}}
+                </dd>
+    
+                <dt>Last updated</dt>
+                <dd>
+                    {{if .UpdatedAt.Valid}}
+                        {{.UpdatedAt.Time.Format "02 Jan 2006 15:04"}}
+                    {{else}}
+                        —
+                    {{end}}
+                </dd>
+            </dl>
+        </div>
+    
+    </div>
+    {{end}}
+{{end}}
+
