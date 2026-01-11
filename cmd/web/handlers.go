@@ -1,13 +1,33 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
-	"html/template"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"mealplenary.jackwrfuller.au/internal/models"
 )
+
+func (app *app) render(w http.ResponseWriter, r *http.Request, status int, page string, data templateData) {
+	ts, ok := app.templateCache[page]
+	if !ok {
+		err := fmt.Errorf("the template %s does not exist", page)
+		app.serverError(w, r, err)
+		return
+	}
+
+	buf := new(bytes.Buffer)
+	err := ts.ExecuteTemplate(buf, "base", data)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	w.WriteHeader(status)
+	buf.WriteTo(w)
+}
 
 
 func (app *app) home(w http.ResponseWriter, r *http.Request) {
@@ -18,25 +38,9 @@ func (app *app) home(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-	files := []string{
-		"./ui/html/base.tmpl",
-		"./ui/html/partials/nav.tmpl",
-		"./ui/html/pages/home.tmpl",
-	}
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, r, err)
-		return
-	}
-
-	data := templateData{
+	app.render(w, r, http.StatusOK, "home.tmpl", templateData{
 		Recipes: recipes,
-	}
-	err = ts.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		app.serverError(w, r, err)
-		return
-	}
+	})
 
 }
 
@@ -72,25 +76,10 @@ func (app *app) recipeView(w http.ResponseWriter, r *http.Request) {
         return
 	}
 
-	files := []string{
-		"./ui/html/base.tmpl",
-		"./ui/html/partials/nav.tmpl",
-		"./ui/html/pages/view.tmpl",
-	}
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, r, err)
-		return
-	}
-
-	data := templateData{
+	app.render(w, r, http.StatusOK, "view.tmpl", templateData{
 		Recipe: recipe,
-	}
+	})
 
-	err = ts.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		app.serverError(w, r, err)
-	}
 }
 
 func (app *app) recipeCreate(w http.ResponseWriter, r *http.Request) {

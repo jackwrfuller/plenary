@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"html/template"
 	"path/filepath"
 	"fmt"
 
@@ -29,6 +30,7 @@ type app struct {
 	cfg appConfig
 	db     *sql.DB
 	queries *models.Queries
+	templateCache map[string]*template.Template
 }
 
 func main() {
@@ -49,14 +51,20 @@ func main() {
 		os.Exit(1)
 	}
 	defer db.Close()
-
 	queries := models.New(db)
+
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
 
 	app := &app{
 		logger: logger,
 		cfg: cfg,
 		db: db,
 		queries: queries,
+		templateCache: templateCache,
 	}
 	
 	logger.Info("starting server", slog.String("port", app.cfg.Port))
