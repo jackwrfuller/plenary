@@ -28,7 +28,7 @@
                 <dt>Created</dt>
                 <dd>
                     {{if .CreatedAt.Valid}}
-                        {{.CreatedAt.Time.Format "02 Jan 2006 15:04"}}
+                        {{humanDate .CreatedAt.Time}}
                     {{else}}
                         —
                     {{end}}
@@ -37,7 +37,7 @@
                 <dt>Last updated</dt>
                 <dd>
                     {{if .UpdatedAt.Valid}}
-                        {{.UpdatedAt.Time.Format "02 Jan 2006 15:04"}}
+                        {{.UpdatedAt.Time}}
                     {{else}}
                         —
                     {{end}}

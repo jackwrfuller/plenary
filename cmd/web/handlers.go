@@ -38,10 +38,10 @@ func (app *app) home(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-	app.render(w, r, http.StatusOK, "home.tmpl", templateData{
-		Recipes: recipes,
-	})
+	data := app.newTemplateData(r)
+	data.Recipes = recipes
 
+	app.render(w, r, http.StatusOK, "home.tmpl", data)
 }
 
 func (app *app) recipeList(w http.ResponseWriter, r *http.Request) {
@@ -76,10 +76,10 @@ func (app *app) recipeView(w http.ResponseWriter, r *http.Request) {
         return
 	}
 
-	app.render(w, r, http.StatusOK, "view.tmpl", templateData{
-		Recipe: recipe,
-	})
+	data := app.newTemplateData(r)
+	data.Recipe = recipe
 
+	app.render(w, r, http.StatusOK, "view.tmpl", data)
 }
 
 func (app *app) recipeCreate(w http.ResponseWriter, r *http.Request) {

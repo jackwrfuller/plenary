@@ -12,7 +12,7 @@
             {{range .Recipes}}
             <tr>
                 <td><a href='/recipe/view/{{.ID}}'>{{.Name}}</a></td>
-                <td>{{.CreatedAt}}</td>
+                <td>{{humanDate .CreatedAt.Time}}</td>
                 <td>#{{.ID}}</td>
             </tr>
             {{end}}
@@ -20,4 +20,5 @@
     {{else}}
         <p>There's nothing to see here yet!</p>
     {{end}}
+    <button class="button is-danger">Button</button>
 {{end}}
