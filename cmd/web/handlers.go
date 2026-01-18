@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"database/sql"
 	"strconv"
 
 	"mealplenary.jackwrfuller.au/internal/models"
@@ -83,12 +84,52 @@ func (app *app) recipeView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *app) recipeCreate(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Create recipe form"))
+	data := app.newTemplateData(r)
+
+	app.render(w, r, http.StatusOK, "recipeCreate.tmpl", data)
 }
 
 func (app *app) recipeCreatePost(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("Server", "Go")
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("Create recipe"))
+	ctx := r.Context()
+
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	name          := r.PostForm.Get("name")
+	notes         := r.PostForm.Get("notes")
+	serves, err   := strconv.Atoi(r.PostForm.Get("serves"))
+	if err != nil {
+		serves = 0
+	}
+	prepable, err := strconv.ParseBool(r.PostForm.Get("can_meal_prep"))
+	if err != nil {
+		prepable = false
+	}
+
+	params := models.CreateRecipeParams{
+		UserID: int32(1),
+		Name: name,
+		Notes: sql.NullString{
+        	String: notes,
+        	Valid:  notes != "",
+    	},
+		CanMealPrep: prepable,
+		Serves: int32(serves),
+
+	}	
+	res, err := app.queries.CreateRecipe(ctx, params)
+	if err != nil {
+		app.serverError(w, r, err)
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		app.serverError(w, r, err)
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/recipe/view/%d", id), http.StatusSeeOther)
 }
 
